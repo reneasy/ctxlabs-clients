@@ -7,15 +7,21 @@
     },
     "extends": [
         "eslint:recommended",
-        "plugin:react/recommended"
+        "plugin:react/recommended",
+        "plugin:mocha/recommended"
     ],
     "globals": {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly",
         "expect": true,
         "describe": true,
+        "sinon": true,
         "it": true,
-        "shallow": true
+        "mount": true,
+        "shallow": true,
+        "beforeEach": true,
+        "afterEach": true,
+        "xit": true
     },
     "parserOptions": {
         "ecmaFeatures": {
@@ -25,9 +31,11 @@
         "sourceType": "module"
     },
     "plugins": [
-        "react"
+        "react",
+        "mocha"
     ],
     "rules": {
+        "mocha/no-mocha-arrows": "off"
     },
     "settings": {
         "react": {

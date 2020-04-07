@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import logo from '../logo.svg';
+
+import Client from './Client.js';
 
 import './Clients.css';
 
@@ -7,54 +8,78 @@ class Clients extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: '',
-      greeting: ''
+      search: '',
+      clients: []
     };
     this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    fetch(`/api/clients`)
+      .then(response => response.json())
+      .then(clients => this.setState({clients}));
   }
 
   handleChange(event) {
-    this.setState({ name: event.target.value });
+    event.preventDefault();
+
+    const searchTerm = event.target.value;
+    this.setState({ search: searchTerm });
+    
+    fetch(`/api/clients?search=${encodeURIComponent(searchTerm)}`)
+      .then(response => response.json())
+      .then(clients => this.setState({clients}));
+
   }
 
-  handleSubmit(event) {
-    event.preventDefault();
-    fetch(`/api/greeting?name=${encodeURIComponent(this.state.name)}`)
-      .then(response => response.json())
-      .then(state => this.setState(state));
+  getClients() {
+    return this.state.clients.map((client, key) => {
+      return (<Client key={key}
+        avatar={client.avatar}
+        name={client.name}
+        title={client.title}
+        quote={client.quote}
+        nationality={client.nationality} />);
+    });
+  }
+
+  getClientsLength() {
+    return this.state.clients ? this.state.clients.length : 0;
   }
 
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
+      <div className="Clients">
+        <div className="Clients-container">
+          <header className="Clients-header">
+            <form className="Clients-search">
+              <label className="Clients-search__label" 
+                htmlFor="name">Search Clients</label>
+              <input
+                id="name"
+                className="Clients-search__input"
+                type="text"
+                placeholder="Enter search term"
+                value={this.state.search}
+                onChange={this.handleChange}
+              />
+            </form>
+          </header>
 
-          <form onSubmit={this.handleSubmit}>
-            <label htmlFor="name">Enter your name: </label>
-            <input
-              id="name"
-              type="text"
-              value={this.state.name}
-              onChange={this.handleChange}
-            />
-            <button type="submit">Submit</button>
-          </form>
-          <p>{this.state.greeting}</p>
+          <h2 className="Clients-count">
+            <span className="Clients-count-length">{this.getClientsLength()}</span>{' '}
+            Client(s)
+          </h2>
 
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+          <ul className="Clients-list">
+            {this.getClients()}
+          </ul>
+
+          <footer className="Clients-footer">
+            <p className="Clients-footer__project">ctxlabs-clients</p>
+            <p className="Clients-footer__developer">Developed by Reneldy Senat</p>
+          </footer>
+        </div>
       </div>
     );
   }
